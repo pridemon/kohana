@@ -22,7 +22,7 @@ else
  * @link http://kohanaframework.org/guide/using.configuration
  * @link http://www.php.net/manual/timezones
  */
-date_default_timezone_set('America/Chicago');
+date_default_timezone_set('Asia/Novosibirsk');
 
 /**
  * Set the default locale.
@@ -30,7 +30,7 @@ date_default_timezone_set('America/Chicago');
  * @link http://kohanaframework.org/guide/using.configuration
  * @link http://www.php.net/manual/function.setlocale
  */
-setlocale(LC_ALL, 'en_US.utf-8');
+setlocale(LC_ALL, 'ru_RU.utf-8');
 
 /**
  * Enable the Kohana auto-loader.
@@ -61,7 +61,7 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
 /**
  * Set the default language
  */
-I18n::lang('en-us');
+I18n::lang('ru-ru');
 
 /**
  * Set Kohana::$environment if a 'KOHANA_ENV' environment variable has been supplied.
@@ -90,7 +90,8 @@ if (isset($_SERVER['KOHANA_ENV']))
  * - boolean  expose      set the X-Powered-By header                        FALSE
  */
 Kohana::init(array(
-	'base_url'   => '/kohana/',
+	'base_url'   => '/',
+    'index_file' => FALSE,
 ));
 
 /**
@@ -103,20 +104,43 @@ Kohana::$log->attach(new Log_File(APPPATH.'logs'));
  */
 Kohana::$config->attach(new Config_File);
 
+Cookie::$salt = 'ProstoDobavSol';
+
 /**
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
 Kohana::modules(array(
-	// 'auth'       => MODPATH.'auth',       // Basic authentication
-	// 'cache'      => MODPATH.'cache',      // Caching with multiple backends
-	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
-	// 'database'   => MODPATH.'database',   // Database access
-	// 'image'      => MODPATH.'image',      // Image manipulation
-	// 'minion'     => MODPATH.'minion',     // CLI Tasks
-	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
-	// 'unittest'   => MODPATH.'unittest',   // Unit testing
-	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
-	));
+     'smarty'     => MODPATH.'smarty',     // Smarty Templates
+     'themes'     => DOCROOT.'themes',     // Template Directory    
+     'a2'         => MODPATH.'a2',           // Wouter's module   
+     'acl'        => MODPATH.'acl',           // Wouter's module 
+     'auth'       => MODPATH.'auth',       // Basic authentication
+     'cache'      => MODPATH.'cache',      // Caching with multiple backends
+     'codebench'  => MODPATH.'codebench',  // Benchmarking tool
+     'database'   => MODPATH.'database',   // Database access
+     'image'      => MODPATH.'image',      // Image manipulation
+    // 'minion'     => MODPATH.'minion',     // CLI Tasks
+     'orm'        => MODPATH.'orm',        // Object Relationship Mapping
+    // 'unittest'   => MODPATH.'unittest',   // Unit testing
+    // 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
+     'pagination' => MODPATH.'pagination',    // Pagination
+     'ulogin'     => MODPATH.'ulogin', 
+     'qqfileuploader' => MODPATH.'qqfileuploader',
+    ));
+
+Route::set('error', 'error/<action>(/<origuri>(/<message>))', array('action' => '[0-9]++', 'message' => '.+'))->defaults(array( 
+        'controller' => 'error', 
+        'action'     => 'index' 
+    ));
+         
+Route::set('ajax', 'ajax/<version>(/<controller>(/<action>(.<format>)))')
+    ->defaults(array(
+        'controller'    => 'home',
+        'action'        => 'index',
+        'directory'     => 'ajax',
+        'version'       => '1',
+        'format'        => 'json',
+    ));    
 
 /**
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
@@ -124,6 +148,6 @@ Kohana::modules(array(
  */
 Route::set('default', '(<controller>(/<action>(/<id>)))')
 	->defaults(array(
-		'controller' => 'welcome',
+		'controller' => 'home',
 		'action'     => 'index',
 	));
